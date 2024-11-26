@@ -1,8 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import React from 'react';
-
 import { Button } from 'primereact/button';
 import { Card } from 'primereact/card';
 import { Timeline } from 'primereact/timeline';
