@@ -126,7 +126,7 @@ const Dashboard = () => {
   };
 
   const session = useSession();
-console.log(session)
+  console.log(session);
   return (
     <div className="grid">
       <div className="col-12 lg:col-6 xl:col-3">

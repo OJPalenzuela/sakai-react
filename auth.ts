@@ -1,12 +1,12 @@
-import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+import NextAuth from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: {
         email: {},
-        password: {},
+        password: {}
       },
       authorize: async (/* credentials: any */) => {
         /*   if (!user) {
@@ -14,15 +14,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         } */
 
         return {
-          id: "user.id",
-          name: "user.name",
-          email: "user.email",
+          id: 'id',
+          name: 'Omar',
+          email: 'palenzuelaomar@gmail.com'
         };
-      },
-    }),
+      }
+    })
   ],
 
-  session: { strategy: "jwt" },
+  session: { strategy: 'jwt' },
   callbacks: {
     jwt({ token, user }) {
       if (user) {
@@ -34,9 +34,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     session({ session, token }) {
       session.user.id = token.id as string;
       return session;
-    },
+    }
   },
   pages: {
-    signIn: "/auth/login",
-  },
+    signIn: '/auth/login'
+  }
 });
