@@ -223,7 +223,7 @@ const InputDemo: Page = () => {
           <div className="grid">
             <div className="col-12 md:col-4">
               <div className="field-radiobutton">
-                <RadioButton inputId="option1" name="option" value="Chicago" checked={radioValue === 'Chicago'} onChange={(e) => setRadioValue(e.value)} />
+                <RadioButton />
                 <label htmlFor="option1">Chicago</label>
               </div>
             </div>
