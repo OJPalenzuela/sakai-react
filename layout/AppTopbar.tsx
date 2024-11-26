@@ -5,6 +5,7 @@ import { classNames } from 'primereact/utils';
 import React, { forwardRef, useContext, useImperativeHandle, useRef } from 'react';
 import { AppTopbarRef } from '@/types';
 import { LayoutContext } from './context/layoutcontext';
+import { logoutAction } from '@/actions/auth.action';
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
   const { layoutConfig, layoutState, onMenuToggle, showProfileSidebar } = useContext(LayoutContext);
@@ -42,12 +43,18 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
           <i className="pi pi-user"></i>
           <span>Profile</span>
         </button>
+
         <Link href="/documentation">
           <button type="button" className="p-link layout-topbar-button">
             <i className="pi pi-cog"></i>
             <span>Settings</span>
           </button>
         </Link>
+
+        <button type="button" className="p-link layout-topbar-button" onClick={() => logoutAction()}>
+          <i className="pi pi-fw pi-sign-out"></i>
+          <span>Quit</span>
+        </button>
       </div>
     </div>
   );
