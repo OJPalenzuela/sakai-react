@@ -27,7 +27,7 @@ export async function registerAction(values: z.infer<typeof registerSchema>) {
     const { data, success } = registerSchema.safeParse(values);
 
     if (!success) {
-      return { error: 'Invalid credentials' };
+      return { error: 'Credenciales invalidas' };
     }
 
     const user: UserBackend = await backend.post('/api/gateway/register', data).then((res) => res.data);

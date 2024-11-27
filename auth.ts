@@ -24,7 +24,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const { data, success } = loginSchema.safeParse(credentials);
 
           if (!success) {
-            throw new Error('Invalid credentials.');
+            throw new Error('Credenciales invalidas.');
           }
 
           const user: UserBackend = await backend
@@ -35,14 +35,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             });
 
           if (!user || !user?.success) {
-            throw new Error('Invalid credentials.');
+            throw new Error('Credenciales invalidas.');
           }
 
           return {
             token: user?.data?.token
           };
         } catch {
-          throw new Error('Invalid credentials.');
+          throw new Error('Credenciales invalidas.');
         }
       }
     })
