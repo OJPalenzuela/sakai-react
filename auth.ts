@@ -1,5 +1,16 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import { loginSchema } from './lib/zod';
+import { backend } from './config/backend';
+
+interface UserBackend {
+  success: boolean;
+  message: string;
+  errors: any;
+  data: {
+    token: string;
+  };
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -8,16 +19,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         email: {},
         password: {}
       },
-      authorize: async (/* credentials: any */) => {
-        /*   if (!user) {
-          throw new Error("Invalid credentials.");
-        } */
+      authorize: async (credentials): Promise<any> => {
+        try {
+          const { data, success } = loginSchema.safeParse(credentials);
 
-        return {
-          id: 'id',
-          name: 'Omar',
-          email: 'palenzuelaomar@gmail.com'
-        };
+          if (!success) {
+            throw new Error('Invalid credentials.');
+          }
+
+          const user: UserBackend = await backend
+            .post('/api/gateway/login', data)
+            .then((res) => res.data)
+            .catch((error) => {
+              throw new Error(error.response.data.message);
+            });
+
+          if (!user || !user.success) {
+            throw new Error('Invalid credentials.');
+          }
+
+          return {
+            token: user.data.token
+          };
+        } catch {
+          throw new Error('Invalid credentials.');
+        }
       }
     })
   ],
@@ -27,12 +53,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     jwt({ token, user }) {
       if (user) {
         // User is available during sign-in
-        token.id = user.id;
+        token.token = user.token;
       }
       return token;
     },
     session({ session, token }) {
-      session.user.id = token.id as string;
+      session.user.token = token.token;
       return session;
     }
   },

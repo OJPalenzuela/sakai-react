@@ -81,7 +81,7 @@ const LoginPage = () => {
                 name="password"
                 control={control}
                 rules={{ required: 'Name is required.' }}
-                render={({ field }) => <Password id={field.name} {...field} placeholder="Password" toggleMask className="w-full mb-5" inputClassName="w-full p-3 md:w-30rem"></Password>}
+                render={({ field }) => <Password id={field.name} {...field} placeholder="Password" feedback={false} toggleMask className="w-full mb-5" inputClassName="w-full p-3 md:w-30rem"></Password>}
               ></Controller>
 
               <div className="flex align-items-center justify-content-between mb-5 gap-5">
