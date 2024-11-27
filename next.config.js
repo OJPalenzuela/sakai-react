@@ -1,4 +1,13 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+  reactStrictMode: false,
+  images: {
+    unoptimized: true
+  },
 
-module.exports = nextConfig
+  sassOptions: {
+    silenceDeprecations: ['legacy-js-api']
+  }
+};
+
+module.exports = nextConfig;

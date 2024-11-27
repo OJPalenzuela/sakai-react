@@ -11,7 +11,6 @@ import { LayoutContext } from '../../layout/context/layoutcontext';
 import Link from 'next/link';
 import { Demo } from '@/types';
 import { ChartData, ChartOptions } from 'chart.js';
-import { useSession } from 'next-auth/react';
 
 const lineData: ChartData = {
   labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -125,8 +124,6 @@ const Dashboard = () => {
     });
   };
 
-  const session = useSession();
-  console.log(session);
   return (
     <div className="grid">
       <div className="col-12 lg:col-6 xl:col-3">
