@@ -3,11 +3,11 @@ import Credentials from 'next-auth/providers/credentials';
 import { loginSchema } from './lib/zod';
 import { backend } from './config/backend';
 
-interface UserBackend {
-  success: boolean;
+export interface UserBackend {
+  success?: boolean;
   message: string;
   errors: any;
-  data: {
+  data?: {
     token: string;
   };
 }
@@ -34,12 +34,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               throw new Error(error.response.data.message);
             });
 
-          if (!user || !user.success) {
+          if (!user || !user?.success) {
             throw new Error('Invalid credentials.');
           }
 
           return {
-            token: user.data.token
+            token: user?.data?.token
           };
         } catch {
           throw new Error('Invalid credentials.');

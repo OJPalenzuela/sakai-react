@@ -2,7 +2,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import React, { useContext, useState, useTransition } from 'react';
-import { Checkbox } from 'primereact/checkbox';
 import { Button } from 'primereact/button';
 import { Password } from 'primereact/password';
 import { LayoutContext } from '../../../../layout/context/layoutcontext';
@@ -10,32 +9,47 @@ import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { loginAction } from '@/actions/auth.action';
-import { loginSchema } from '@/lib/zod';
+import { registerAction } from '@/actions/auth.action';
+import { registerSchema } from '@/lib/zod';
+import Link from 'next/link';
 
 const defaultValues = {
+  name: '',
   email: '',
-  password: ''
+  password: '',
+  password_confirmation: ''
 };
 
-const LoginPage = () => {
-  const [, setError] = useState<string | null>(null);
+const RegisterPage = () => {
+  const [error, setError] = useState<string | null>(null);
+
   const [isPending, startTransition] = useTransition();
 
-  const [checked, setChecked] = useState(false);
   const { layoutConfig } = useContext(LayoutContext);
 
   const router = useRouter();
-  const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden', { 'p-input-filled': layoutConfig.inputStyle === 'filled' });
+  const containerClassName = classNames('surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden', {
+    'p-input-filled': layoutConfig.inputStyle === 'filled'
+  });
 
-  const { control, handleSubmit } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    trigger // Importante para la validación manual
+  } = useForm({
     defaultValues,
-    resolver: zodResolver(loginSchema as any)
+    resolver: zodResolver(
+      registerSchema.refine((data) => data.password === data.password_confirmation, {
+        message: 'Las contraseñas no coinciden',
+        path: ['password_confirmation']
+      })
+    )
   });
 
   const onSubmit = async (data: any) => {
     startTransition(async () => {
-      const response = await loginAction(data);
+      const response = await registerAction(data);
 
       if (response.error) {
         setError(response.error);
@@ -43,6 +57,10 @@ const LoginPage = () => {
         router.push('/');
       }
     });
+  };
+
+  const getFormErrorMessage = (name: keyof typeof defaultValues) => {
+    return errors[name] && <div className="p-error mb-4">{errors[name].message}</div>;
   };
 
   return (
@@ -58,36 +76,88 @@ const LoginPage = () => {
         >
           <div className="w-full surface-card py-8 px-5 sm:px-8" style={{ borderRadius: '53px' }}>
             <form onSubmit={handleSubmit(onSubmit)}>
+              <label htmlFor="name" className="block text-900 text-xl font-medium mb-2">
+                Nombre
+              </label>
+              <Controller
+                name="name"
+                control={control}
+                rules={{ required: 'Nombre requerido' }}
+                render={({ field }) => <InputText id={field.name} {...field} type="text" placeholder="Tú nombre" className="w-full md:w-30rem mb-5" style={{ padding: '1rem' }} />}
+              ></Controller>
+              {getFormErrorMessage('name')}
+
               <label htmlFor="email" className="block text-900 text-xl font-medium mb-2">
                 Email
               </label>
               <Controller
                 name="email"
                 control={control}
-                rules={{ required: 'Name is required.' }}
-                render={({ field }) => <InputText id={field.name} {...field} type="text" placeholder="Email address" className="w-full md:w-30rem mb-5" style={{ padding: '1rem' }} />}
+                rules={{ required: 'Email requerido' }}
+                render={({ field }) => <InputText id={field.name} {...field} type="email" placeholder="Email" className="w-full md:w-30rem mb-5" style={{ padding: '1rem' }} />}
               ></Controller>
-              <label htmlFor="password" className="block text-900 font-medium text-xl mb-2">
-                Password
-              </label>
+              {getFormErrorMessage('email')}
 
+              <label htmlFor="password" className="block text-900 font-medium text-xl mb-2">
+                Contraseña
+              </label>
               <Controller
                 name="password"
                 control={control}
-                rules={{ required: 'Name is required.' }}
-                render={({ field }) => <Password id={field.name} {...field} placeholder="Password" feedback={false} toggleMask className="w-full mb-5" inputClassName="w-full p-3 md:w-30rem"></Password>}
+                rules={{ required: 'Password is required.' }}
+                render={({ field }) => (
+                  <Password
+                    id={field.name}
+                    {...field}
+                    placeholder="Contraseña"
+                    feedback={false}
+                    toggleMask
+                    className="w-full mb-5"
+                    inputClassName="w-full p-3 md:w-30rem"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      trigger('password_confirmation');
+                    }}
+                  />
+                )}
               ></Controller>
+              {getFormErrorMessage('password')}
+
+              <label htmlFor="password_confirmation" className="block text-900 font-medium text-xl mb-2">
+                Confirmar contraseña
+              </label>
+              <Controller
+                name="password_confirmation"
+                control={control}
+                rules={{ required: 'Confirmación requerida' }}
+                render={({ field }) => (
+                  <Password
+                    id={field.name}
+                    {...field}
+                    placeholder="Confirma tu contraseña"
+                    feedback={false}
+                    toggleMask
+                    className="w-full mb-5"
+                    inputClassName="w-full p-3 md:w-30rem"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      trigger('password_confirmation');
+                    }}
+                  />
+                )}
+              ></Controller>
+              {getFormErrorMessage('password_confirmation')}
 
               <div className="flex align-items-center justify-content-between mb-5 gap-5">
-                <div className="flex align-items-center">
-                  <Checkbox inputId="rememberme1" checked={checked} onChange={(e) => setChecked(e.checked ?? false)} className="mr-2"></Checkbox>
-                  <label htmlFor="rememberme1">Remember me</label>
-                </div>
-                <a className="font-medium no-underline ml-2 text-right cursor-pointer" style={{ color: 'var(--primary-color)' }}>
-                  Forgot password?
-                </a>
+                <div className="flex align-items-center"></div>
+                <Link href="/auth/login" className="font-medium no-underline ml-2 text-right cursor-pointer" style={{ color: 'var(--primary-color)' }}>
+                  Iniciar sesión
+                </Link>
               </div>
-              <Button type="submit" label="Sign In" className="w-full p-3 text-xl" disabled={isPending} />
+
+              {error && <div className="p-error mb-4">{error}</div>}
+
+              <Button type="submit" label="Registrarse" className="w-full p-3 text-xl" disabled={isPending} />
             </form>
           </div>
         </div>
@@ -96,4 +166,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;
