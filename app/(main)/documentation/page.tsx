@@ -1,5 +1,3 @@
-/* eslint-disable @next/next/no-sync-scripts */
-
 const Documentation = () => {
   return (
     <>
